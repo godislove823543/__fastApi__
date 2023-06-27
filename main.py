@@ -3,7 +3,6 @@ from datetime import datetime
 import sqlite3
 from sqlite3 import Error
 
-
 app = FastAPI()
 
 def create_connection(db_file):
@@ -18,10 +17,10 @@ def create_connection(db_file):
 def create_table(conn):
     sql_tasks = """
     CREATE TABLE IF NOT EXISTS iot1(
-		id INTEGER PRIMARY KEY,
-		date TEXT NOT NULL,
-		light REAL NOTNULL,
-		temperature REAL NOT NULL
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        date TEXT NOT NULL,
+        light REAL NOT NULL,
+        temperature REAL NOT NULL
     );
     """
 
@@ -33,7 +32,7 @@ def create_table(conn):
 
 def insert_project(conn, project):
     sql = """
-    INSERT INTO iot1(date,light,end_date)
+    INSERT INTO iot1(date,light,temperature)
     VALUES(?,?,?)
     """
     cursor = conn.cursor()
@@ -42,7 +41,7 @@ def insert_project(conn, project):
 
 @app.get("/")
 def read_root():
-    return {"Hello": "kiki"}
+    return {"Hello": "robert"}
 
 @app.get("/items/{item_id}")
 async def read_item(item_id):
@@ -53,10 +52,9 @@ async def read_item(item_id):
 async def read_item(time:str = datetime.now().strftime("%Y%m%d %H:%M:%S"),light: float = 0.0, temperature: float = 0.0):
     conn = create_connection('data.db')
     create_table(conn)
-
     insert_project(conn, (time,light,temperature))
     conn.close()
-    
+
     return {
         "時間":time,
         "光線":light,
